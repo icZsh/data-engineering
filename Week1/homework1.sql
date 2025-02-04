@@ -14,7 +14,7 @@ SELECT
     SUM(CASE WHEN trip_distance > 10 THEN 1 ELSE 0 END) as over_10_miles
 FROM green_tripdata
 WHERE lpep_pickup_datetime::date >= '2019-10-01' 
-    AND lpep_pickup_datetime::date < '2019-11-01'
+    AND lpep_dropoff_datetime::date < '2019-11-01'
 
 
 -- Which was the pick up day with the longest trip distance? Use the pick up time for your calculations.
