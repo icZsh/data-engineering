@@ -1,0 +1,198 @@
+version: 2
+
+models:
+  - name: dim_zones
+    description: >
+      List of unique zones idefied by locationid. 
+      Includes the service zone they correspond to (Green or yellow).
+
+  - name: dm_monthly_zone_revenue
+    description: >
+      Aggregated table of all taxi trips corresponding to both service zones (Green and yellow) per pickup zone, month and service.
+      The table contains monthly sums of the fare elements used to calculate the monthly revenue. 
+      The table contains also monthly indicators like number of trips, and average trip distance. 
+    columns:
+      - name: revenue_monthly_total_amount
+        description: Monthly sum of the the total_amount of the fare charged for the trip per pickup zone, month and service.
+        tests:
+            - not_null:
+                severity: error
+     
+  - name: fact_trips
+    description: >
+      Taxi trips corresponding to both service zones (Green and yellow).
+      The table contains records where both pickup and dropoff locations are valid and known zones. 
+      Each record corresponds to a trip uniquely identified by tripid. 
+    columns:
+      - name: tripid
+        data_type: string
+        description: "unique identifier conformed by the combination of vendorid and pickup time"
+
+      - name: vendorid
+        data_type: int64
+        description: ""
+
+      - name: service_type
+        data_type: string
+        description: ""
+
+      - name: ratecodeid
+        data_type: int64
+        description: ""
+
+      - name: pickup_locationid
+        data_type: int64
+        description: ""
+
+      - name: pickup_borough
+        data_type: string
+        description: ""
+
+      - name: pickup_zone
+        data_type: string
+        description: ""
+
+      - name: dropoff_locationid
+        data_type: int64
+        description: ""
+
+      - name: dropoff_borough
+        data_type: string
+        description: ""
+
+      - name: dropoff_zone
+        data_type: string
+        description: ""
+
+      - name: pickup_datetime
+        data_type: timestamp
+        description: ""
+
+      - name: dropoff_datetime
+        data_type: timestamp
+        description: ""
+
+      - name: store_and_fwd_flag
+        data_type: string
+        description: ""
+
+      - name: passenger_count
+        data_type: int64
+        description: ""
+
+      - name: trip_distance
+        data_type: numeric
+        description: ""
+
+      - name: trip_type
+        data_type: int64
+        description: ""
+
+      - name: fare_amount
+        data_type: numeric
+        description: ""
+
+      - name: extra
+        data_type: numeric
+        description: "" 
+
+      - name: mta_tax
+        data_type: numeric
+        description: ""
+
+      - name: tip_amount
+        data_type: numeric
+        description: ""
+
+      - name: tolls_amount
+        data_type: numeric
+        description: ""
+
+      - name: ehail_fee
+        data_type: numeric
+        description: ""
+
+      - name: improvement_surcharge
+        data_type: numeric
+        description: ""
+
+      - name: total_amount
+        data_type: numeric
+        description: ""
+
+      - name: payment_type
+        data_type: int64
+        description: ""
+
+      - name: payment_type_description
+        data_type: string
+        description: ""
+
+  - name: fct_taxi_trips_quarterly_revenue
+    description: >
+      Quarterly revenue analysis for taxi trips with Year-over-Year (YoY) growth calculations.
+      Shows revenue trends and growth percentages for each service type by quarter.
+    columns:
+      - name: year
+        description: The year of the pickup datetime
+
+      - name: quarter
+        description: The quarter number (1-4) of the pickup datetime
+
+      - name: year_quarter
+        description: Combined year and quarter identifier (e.g. 2019/Q1)
+
+      - name: service_type
+        description: Type of taxi service (Yellow or Green)
+
+      - name: quarterly_revenue
+        description: Total revenue for the quarter
+
+      - name: prev_year_revenue
+        description: Revenue from the same quarter in the previous year
+
+      - name: revenue_growth_yoy_pct
+        description: Year-over-Year revenue growth percentage
+
+  - name: fct_taxi_trips_monthly_fare_p95
+    description: >
+      Monthly 95th percentile fare amounts by service type for valid trips only.
+      Valid trips are those with positive fare amounts and distances, paid by either cash or credit card.
+    columns:
+      - name: service_type
+        description: Type of taxi service (Yellow or Green)
+
+      - name: year
+        description: Year of the pickup datetime
+
+      - name: month
+        description: Month number (1-12) of the pickup datetime
+
+      - name: fare_amount_p90
+        description: 90th percentile of fare amounts for the given service type, year and month
+
+      - name: fare_amount_p95
+        description: 95th percentile of fare amounts for the given service type, year and month
+
+
+      - name: fare_amount_p97
+        description: 97th percentile of fare amounts for the given service type, year and month
+
+
+  - name: dim_fhv_trips
+    description: >
+      Dimensional table for For-Hire Vehicle (FHV) trips with location details.
+      Includes temporal dimensions and borough/zone information from dim_zones.
+    columns:
+      - name: dispatching_base_num
+        description: The TLC Base License Number of the base that dispatched the trip
+      - name: year
+        description: Year extracted from pickup datetime
+      - name: month
+        description: Month number (1-12) extracted from pickup datetime
+      - name: pickup_borough
+        description: Borough where the passenger was picked up
+      - name: dropoff_borough
+        description: Borough where the passenger was dropped off
+
+
